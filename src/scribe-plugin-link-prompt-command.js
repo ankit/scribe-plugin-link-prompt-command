@@ -2,6 +2,7 @@ define(function () {
 
   /**
    * This plugin adds a command for creating links, including a basic prompt.
+   * Only http/https/mailto links are allowed.
    */
 
   'use strict';
@@ -35,6 +36,7 @@ define(function () {
           // If a http/s or mailto link is provided, then we will trust that an link is valid
           var urlProtocolRegExp = /^https?\:\/\//;
           var mailtoProtocolRegExp = /^mailto\:/;
+
           if (! urlProtocolRegExp.test(link) && ! mailtoProtocolRegExp.test(link)) {
             // For emails we just look for a `@` symbol as it is easier.
             if (/@/.test(link)) {
@@ -42,16 +44,24 @@ define(function () {
                 'The URL you entered appears to be an email address. ' +
                 'Do you want to add the required “mailto:” prefix?'
               );
+
               if (shouldPrefixEmail) {
                 link = 'mailto:' + link;
+              } else {
+                // Don't allow non-mailto links
+                link = '';
               }
             } else {
               var shouldPrefixLink = window.confirm(
                 'The URL you entered appears to be a link. ' +
                 'Do you want to add the required “http://” prefix?'
               );
+
               if (shouldPrefixLink) {
                 link = 'http://' + link;
+              } else {
+                // Don't allow non-http(s) links
+                link = '';
               }
             }
           }
